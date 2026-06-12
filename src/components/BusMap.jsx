@@ -1,21 +1,38 @@
-import { MapContainer, TileLayer } from "react-leaflet";
-import BusStops from "./BusStops";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+} from "react-leaflet";
 
-export default function BusMap() {
+import FlyToStop from "./FlyToStop";
+
+export default function BusMap({
+  selectedStop,
+}) {
   return (
     <MapContainer
       center={[17.45, 78.38]}
       zoom={12}
       style={{
-        height: "100vh",
-        width: "100%",
+        height: "600px",
       }}
     >
       <TileLayer
-        attribution="© OpenStreetMap"
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-        <BusStops />
+
+      <FlyToStop
+        selectedStop={selectedStop}
+      />
+
+      {selectedStop && (
+        <Marker
+          position={[
+            selectedStop.stop_lat,
+            selectedStop.stop_lon,
+          ]}
+        />
+      )}
     </MapContainer>
   );
 }

@@ -1,0 +1,40 @@
+import { useState } from "react";
+import styles from "./StopSearch.module.css";
+
+export default function StopSearch({ stops, onSelect }) {
+  const [query, setQuery] = useState("");
+
+  const results = stops
+    .filter((stop) =>
+      stop.stop_name?.toLowerCase().includes(query.toLowerCase())
+    )
+    .slice(0, 10);
+
+  return (
+    <div className={styles.container}>
+      <input
+        className={styles.input}
+        type="text"
+        placeholder="Search bus stop..."
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+
+      {query && (
+        <div>
+          {results.map((stop) => (
+            <div
+              key={stop.stop_id}
+              onClick={() => {
+                onSelect(stop);
+                setQuery(stop.stop_name);
+              }}
+            >
+              {stop.stop_name}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

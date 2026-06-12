@@ -1,14 +1,25 @@
 import { useState } from "react";
+import StopSearch from "./components/StopSearch";
 import BusMap from "./components/BusMap";
+import useStops from "./hooks/useStops";
 
 function App() {
-  const [selectedStop, setSelectedStop] = useState(null);
+  const stops = useStops();
+
+  const [selectedStop, setSelectedStop] =
+    useState(null);
 
   return (
-    <BusMap
-      selectedStop={selectedStop}
-      setSelectedStop={setSelectedStop}
-    />
+    <>
+      <StopSearch
+        stops={stops}
+        onSelect={setSelectedStop}
+      />
+
+      <BusMap
+        selectedStop={selectedStop}
+      />
+    </>
   );
 }
 
