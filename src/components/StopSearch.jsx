@@ -20,21 +20,22 @@ export default function StopSearch({ stops, onSelect }) {
         onChange={(e) => setQuery(e.target.value)}
       />
 
-      {query && (
-        <div>
-          {results.map((stop) => (
-            <div
-              key={stop.stop_id}
-              onClick={() => {
-                onSelect(stop);
-                setQuery(stop.stop_name);
-              }}
-            >
-              {stop.stop_name}
-            </div>
-          ))}
-        </div>
-      )}
+     {query && results.length > 0 && (
+  <div className={styles.results}>
+    {results.map((stop) => (
+      <div
+        key={stop.stop_id}
+        className={styles.resultItem}
+        onClick={() => {
+          onSelect(stop);
+          setQuery(stop.stop_name);
+        }}
+      >
+        {stop.stop_name}
+      </div>
+    ))}
+  </div>
+)}
     </div>
   );
 }

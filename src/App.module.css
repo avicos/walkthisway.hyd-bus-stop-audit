@@ -1,0 +1,43 @@
+.app {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+}
+
+.searchOverlay {
+  position: absolute;
+
+  top: 20px;
+  left: 50%;
+
+  transform: translateX(-40%);
+
+  width: min(600px, calc(100% - 32px));
+
+  z-index: 1000;
+}
+
+.locationButton {
+  position: absolute;
+
+  right: 16px;
+  bottom: 24px;
+
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: white;
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,.2);
+
+  cursor: pointer;
+
+  z-index: 1000;
+}

@@ -9,23 +9,14 @@ export default function BusStops() {
   return (
     <>
       {geojson.features.map((feature, index) => {
-         if (
-    !feature.geometry ||
-    feature.geometry.type !== "Point"
-  ) {
-    return null;
-  }
-        const [lng, lat] =
-          feature.geometry.coordinates;
+        if (!feature.geometry || feature.geometry.type !== "Point") {
+          return null;
+        }
+        const [lng, lat] = feature.geometry.coordinates;
 
         return (
-          <Marker
-            key={index}
-            position={[lat, lng]}
-          >
-            <Popup>
-              {feature.properties.name}
-            </Popup>
+          <Marker key={index} position={[lat, lng]}>
+            <Popup>{feature.properties.name}</Popup>
           </Marker>
         );
       })}
