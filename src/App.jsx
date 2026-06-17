@@ -5,6 +5,7 @@ import useStops from "./hooks/useStops";
 import useLocation from "./hooks/useLocation";
 import { distanceKm } from "./utils/distance";
 import NearbyStops from "./components/NearbyStops";
+import AuditForm from "./components/AuditForm";
 import styles from "./App.module.css";
 
 function App() {
@@ -38,13 +39,11 @@ function App() {
         nearbyStops={nearbyStops}
         setSelectedStop={setSelectedStop}
       />
-       <div className={styles.searchOverlay}>
-    <StopSearch
-      stops={stops}
-      onSelect={setSelectedStop}
-    />
-    
-  </div>
+
+      <div className={styles.searchOverlay}>
+        <StopSearch stops={stops} onSelect={setSelectedStop} />
+      </div>
+      <AuditForm selectedStop={selectedStop} />
     </>
   );
 }

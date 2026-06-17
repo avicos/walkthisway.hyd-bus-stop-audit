@@ -6,13 +6,14 @@ import FlyToStop from "./FlyToStop";
 import FlyToUser from "./FlyToUser";
 import RecenterMap from "./RecenterMap";
 
-export default function BusMap({ selectedStop, userLocation, nearbyStops }) {
+export default function BusMap({ selectedStop, setSelectedStop, userLocation, nearbyStops }) {
   return (
     <MapContainer
       center={[17.45, 78.38]}
-      zoom={12}
+      zoom={15}
       style={{
-        height: "600px",
+        height: "100%",
+        width: "100%",
       }}
     >
       <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -35,6 +36,7 @@ export default function BusMap({ selectedStop, userLocation, nearbyStops }) {
           eventHandlers={{
             click: () => {
               console.log(stop.stop_name);
+              setSelectedStop(stop);
             },
           }}
         >
