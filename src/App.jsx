@@ -43,7 +43,10 @@ function App() {
       <div className={styles.searchOverlay}>
         <StopSearch stops={stops} onSelect={setSelectedStop} />
       </div>
-      <AuditForm selectedStop={selectedStop} />
+      <AuditForm
+  selectedStop={selectedStop}
+  setSelectedStop={setSelectedStop}
+/>
     </>
   );
 }

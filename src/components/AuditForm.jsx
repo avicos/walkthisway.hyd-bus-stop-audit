@@ -3,6 +3,7 @@ import styles from "./AuditForm.module.css";
 
 export default function AuditForm({
   selectedStop,
+  setSelectedStop,
 }) {
   const [form, setForm] = useState({
     shelter: false,
@@ -24,17 +25,41 @@ export default function AuditForm({
   };
 
   const handleSubmit = () => {
-    console.log({
+    const payload = {
       stop_id: selectedStop.stop_id,
       stop_name: selectedStop.stop_name,
       ...form,
-    });
+    };
+
+    fetch("https://script.google.com/macros/s/AKfycbwCPecxCkxvUn1mx_MQOqdv8c10PGtUIA4DP_UsJ_WfkXHV0evbMTjl4Z2IIzzzrVVh/exec", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        alert("Audit saved");
+          setSelectedStop(null);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Failed to save");
+      });
   };
 
   if (!selectedStop) return null;
 
   return (
     <div className={styles.container}>
+      <div className={styles.header}>
+  <h3>{selectedStop.stop_name}</h3>
+
+  <button
+    onClick={() => setSelectedStop(null)}
+  >
+    ✕
+  </button>
+</div>
       <h3>{selectedStop.stop_name}</h3>
 
       {[
@@ -47,19 +72,11 @@ export default function AuditForm({
         "bus_bay",
         "accessibility_ramp",
       ].map((field) => (
-        <label
-          key={field}
-          className={styles.checkboxRow}
-        >
+        <label key={field} className={styles.checkboxRow}>
           <input
             type="checkbox"
             checked={form[field]}
-            onChange={(e) =>
-              updateField(
-                field,
-                e.target.checked
-              )
-            }
+            onChange={(e) => updateField(field, e.target.checked)}
           />
 
           {field.replaceAll("_", " ")}
@@ -70,18 +87,10 @@ export default function AuditForm({
         className={styles.comments}
         placeholder="Comments..."
         value={form.comments}
-        onChange={(e) =>
-          updateField(
-            "comments",
-            e.target.value
-          )
-        }
+        onChange={(e) => updateField("comments", e.target.value)}
       />
 
-      <button
-        className={styles.submitButton}
-        onClick={handleSubmit}
-      >
+      <button className={styles.submitButton} onClick={handleSubmit}>
         Submit Audit
       </button>
     </div>
