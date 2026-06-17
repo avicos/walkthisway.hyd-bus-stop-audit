@@ -1,21 +1,25 @@
 import { useState } from "react";
 import styles from "./AuditForm.module.css";
 
-export default function AuditForm({
-  selectedStop,
-  setSelectedStop,
-}) {
+export default function AuditForm({ selectedStop, setSelectedStop }) {
   const [form, setForm] = useState({
-    shelter: false,
-    seating: false,
-    route_map: false,
-    schedule: false,
-    pedestrian_access: false,
-    lighting: false,
-    bus_bay: false,
-    accessibility_ramp: false,
-    comments: "",
-  });
+  stop_name:
+    selectedStop?.audit_type === "manual"
+      ? ""
+      : selectedStop?.stop_name || "",
+
+  shelter: false,
+  seating: false,
+  route_map: false,
+  schedule: false,
+  pedestrian_access: false,
+  lighting: false,
+  bus_bay: false,
+  accessibility_ramp: false,
+  comments: "",
+});
+
+
 
   const updateField = (field, value) => {
     setForm((prev) => ({
@@ -27,19 +31,32 @@ export default function AuditForm({
   const handleSubmit = () => {
     const payload = {
       stop_id: selectedStop.stop_id,
-      stop_name: selectedStop.stop_name,
+
+      stop_name:
+        selectedStop.audit_type === "manual"
+          ? form.stop_name
+          : selectedStop.stop_name,
+
+      audit_type: selectedStop.audit_type || "gtfs",
+
+      stop_lat: selectedStop.stop_lat,
+      stop_lon: selectedStop.stop_lon,
+
       ...form,
     };
 
-    fetch("https://script.google.com/macros/s/AKfycbwCPecxCkxvUn1mx_MQOqdv8c10PGtUIA4DP_UsJ_WfkXHV0evbMTjl4Z2IIzzzrVVh/exec", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    })
+    fetch(
+      "https://script.google.com/macros/s/AKfycbwCPecxCkxvUn1mx_MQOqdv8c10PGtUIA4DP_UsJ_WfkXHV0evbMTjl4Z2IIzzzrVVh/exec",
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      },
+    )
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
         alert("Audit saved");
-          setSelectedStop(null);
+        setSelectedStop(null);
       })
       .catch((err) => {
         console.error(err);
@@ -52,15 +69,26 @@ export default function AuditForm({
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-  <h3>{selectedStop.stop_name}</h3>
+        {selectedStop.audit_type === "manual" && (
+          <>
+            <label>Stop Name</label>
 
-  <button
-    onClick={() => setSelectedStop(null)}
-  >
-    ✕
-  </button>
-</div>
-      <h3>{selectedStop.stop_name}</h3>
+            <input
+              type="text"
+              value={form.stop_name}
+              onChange={(e) => updateField("stop_name", e.target.value)}
+              className={styles.input}
+              placeholder="Enter stop name"
+            />
+          </>
+        )}
+        <h3>
+          {selectedStop.audit_type === "manual"
+            ? "Custom Stop"
+            : selectedStop.stop_name}
+        </h3>
+        <button onClick={() => setSelectedStop(null)}>✕</button>
+      </div>
 
       {[
         "shelter",

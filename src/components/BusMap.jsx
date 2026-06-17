@@ -5,8 +5,16 @@ import { userIcon, stopIcon } from "../utils/icons";
 import FlyToStop from "./FlyToStop";
 import FlyToUser from "./FlyToUser";
 import RecenterMap from "./RecenterMap";
+import MapClickHandler from "./MapClickHandler";
 
-export default function BusMap({ selectedStop, setSelectedStop, userLocation, nearbyStops }) {
+export default function BusMap({
+  selectedStop,
+  setSelectedStop,
+  userLocation,
+  nearbyStops,
+  isAddingStop,
+  setIsAddingStop,
+}) {
   return (
     <MapContainer
       center={[17.45, 78.38]}
@@ -16,7 +24,13 @@ export default function BusMap({ selectedStop, setSelectedStop, userLocation, ne
         width: "100%",
       }}
     >
+      <MapClickHandler
+        isAddingStop={isAddingStop}
+        setSelectedStop={setSelectedStop}
+        setIsAddingStop={setIsAddingStop}
+      />
       <TileLayer url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
       <FlyToUser userLocation={userLocation} />
       <RecenterMap userLocation={userLocation} />
       <FlyToStop selectedStop={selectedStop} />
@@ -49,6 +63,11 @@ export default function BusMap({ selectedStop, setSelectedStop, userLocation, ne
       ))}
       {selectedStop && (
         <Marker position={[selectedStop.stop_lat, selectedStop.stop_lon]} />
+      )}
+      {selectedStop?.audit_type === "manual" && (
+        <Marker position={[selectedStop.stop_lat, selectedStop.stop_lon]}>
+          <Popup>Custom Stop</Popup>
+        </Marker>
       )}
     </MapContainer>
   );

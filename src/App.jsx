@@ -4,9 +4,9 @@ import BusMap from "./components/BusMap";
 import useStops from "./hooks/useStops";
 import useLocation from "./hooks/useLocation";
 import { distanceKm } from "./utils/distance";
-import NearbyStops from "./components/NearbyStops";
 import AuditForm from "./components/AuditForm";
 import styles from "./App.module.css";
+import AddStopButton from "./components/AddStopButton";
 
 function App() {
   const stops = useStops();
@@ -14,6 +14,7 @@ function App() {
   const location = useLocation();
 
   const [selectedStop, setSelectedStop] = useState(null);
+  const [isAddingStop, setIsAddingStop] = useState(false);
 
   const nearbyStops = location
     ? stops
@@ -35,15 +36,26 @@ function App() {
     <>
       <BusMap
         selectedStop={selectedStop}
+        setSelectedStop={setSelectedStop}
         userLocation={location}
         nearbyStops={nearbyStops}
-        setSelectedStop={setSelectedStop}
+        isAddingStop={isAddingStop}
+        setIsAddingStop={setIsAddingStop}
       />
 
       <div className={styles.searchOverlay}>
         <StopSearch stops={stops} onSelect={setSelectedStop} />
       </div>
+      <AddStopButton
+        isAddingStop={isAddingStop}
+        setIsAddingStop={setIsAddingStop}
+      />
       <AuditForm
+  key={
+    selectedStop
+      ? `${selectedStop.stop_id}-${selectedStop.stop_lat}-${selectedStop.stop_lon}`
+      : "none"
+  }
   selectedStop={selectedStop}
   setSelectedStop={setSelectedStop}
 />
