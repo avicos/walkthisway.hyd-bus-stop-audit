@@ -8,8 +8,13 @@ export default async function handler(req, res) {
         },
       },
     );
-    const data = await response.json();
-    res.status(200).json(data);
+
+    const text = await response.text();
+
+    console.log("STATUS:", response.status);
+    console.log("BODY:", text.substring(0, 500));
+
+    res.status(200).send(text);
   } catch (err) {
     console.error(err);
 
