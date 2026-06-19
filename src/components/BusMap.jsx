@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 
-import { userIcon, stopIcon } from "../utils/icons";
+import { userIcon, stopIcon, auditedStopIcon } from "../utils/icons";
 
 import FlyToStop from "./FlyToStop";
 import FlyToUser from "./FlyToUser";
@@ -14,6 +14,8 @@ export default function BusMap({
   nearbyStops,
   isAddingStop,
   setIsAddingStop,
+  audits,
+  viewMode,
 }) {
   return (
     <MapContainer
@@ -33,7 +35,7 @@ export default function BusMap({
 
       <FlyToUser userLocation={userLocation} />
       <RecenterMap userLocation={userLocation} />
-      <FlyToStop selectedStop={selectedStop} />
+      {/* <FlyToStop selectedStop={selectedStop} /> */}
       {userLocation && (
         <Marker position={[userLocation.lat, userLocation.lon]} icon={userIcon}>
           <Popup>Your Location</Popup>
@@ -42,27 +44,58 @@ export default function BusMap({
       {userLocation && (
         <Circle center={[userLocation.lat, userLocation.lon]} radius={1000} />
       )}
-      {nearbyStops?.map((stop) => (
+      {viewMode === "audit" &&
+        nearbyStops?.map((stop) => (
+          <Marker
+            key={stop.stop_id}
+            position={[Number(stop.stop_lat), Number(stop.stop_lon)]}
+            icon={stopIcon}
+            eventHandlers={{
+              click: () => {
+                console.log(stop.stop_name);
+                setSelectedStop(stop);
+              },
+            }}
+          >
+            <Popup>
+              <strong>{stop.stop_name}</strong>
+              <br />
+              {stop.distance.toFixed(2)} km
+            </Popup>
+          </Marker>
+        ))}
+      {viewMode === "public" &&
+        audits.map((audit) => (
+          <Marker
+            key={audit._uuid}
+            position={[
+              Number(audit._geolocation[0]),
+              Number(audit._geolocation[1]),
+            ]}
+            icon={auditedStopIcon}
+          >
+            <Popup>
+              <strong>{audit.Name_of_Bus_Stop}</strong>
+              <br />
+              Roof: {audit.Roof}
+              <br />
+              Lighting: {audit.Lighting}
+              <br />
+              Seating: {audit.Seating}
+              <br />
+              Route Map: {audit.Route_map_available}
+              <br />
+              Schedule: {audit.Schedule_available}
+            </Popup>
+          </Marker>
+        ))}
+      {selectedStop?.stop_lat && selectedStop?.stop_lon && (
         <Marker
-          key={stop.stop_id}
-          position={[Number(stop.stop_lat), Number(stop.stop_lon)]}
-          icon={stopIcon}
-          eventHandlers={{
-            click: () => {
-              console.log(stop.stop_name);
-              setSelectedStop(stop);
-            },
-          }}
-        >
-          <Popup>
-            <strong>{stop.stop_name}</strong>
-            <br />
-            {stop.distance.toFixed(2)} km
-          </Popup>
-        </Marker>
-      ))}
-      {selectedStop && (
-        <Marker position={[selectedStop.stop_lat, selectedStop.stop_lon]} />
+          position={[
+            Number(selectedStop.stop_lat),
+            Number(selectedStop.stop_lon),
+          ]}
+        />
       )}
       {selectedStop?.audit_type === "manual" && (
         <Marker position={[selectedStop.stop_lat, selectedStop.stop_lon]}>

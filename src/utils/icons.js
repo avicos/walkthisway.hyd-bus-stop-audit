@@ -30,3 +30,27 @@ export const stopIcon = L.divIcon({
   `,
   className: "",
 });
+
+export const auditedStopIcon = L.divIcon({
+  html: `
+    <div
+      style="
+        width:28px;
+        height:28px;
+        border-radius:50%;
+        background:#22c55e;
+        color:white;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:16px;
+        font-weight:bold;
+        border:2px solid white;
+        box-shadow:0 2px 6px rgba(0,0,0,.3);
+      "
+    >
+      ✓
+    </div>`,
+  className: "",
+  iconSize: [28, 28],
+});

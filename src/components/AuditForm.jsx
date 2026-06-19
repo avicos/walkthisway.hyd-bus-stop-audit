@@ -19,8 +19,6 @@ export default function AuditForm({ selectedStop, setSelectedStop }) {
   comments: "",
 });
 
-
-
   const updateField = (field, value) => {
     setForm((prev) => ({
       ...prev,

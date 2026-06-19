@@ -3,6 +3,7 @@ import StopSearch from "./components/StopSearch";
 import BusMap from "./components/BusMap";
 import useStops from "./hooks/useStops";
 import useLocation from "./hooks/useLocation";
+import useAudits from "./hooks/useAudits";
 import { distanceKm } from "./utils/distance";
 import AuditForm from "./components/AuditForm";
 import styles from "./App.module.css";
@@ -10,9 +11,10 @@ import AddStopButton from "./components/AddStopButton";
 
 function App() {
   const stops = useStops();
-
   const location = useLocation();
+  const audits = useAudits();
 
+  const [viewMode, setViewMode] = useState("audit");
   const [selectedStop, setSelectedStop] = useState(null);
   const [isAddingStop, setIsAddingStop] = useState(false);
 
@@ -41,6 +43,8 @@ function App() {
         nearbyStops={nearbyStops}
         isAddingStop={isAddingStop}
         setIsAddingStop={setIsAddingStop}
+        audits={audits}
+        viewMode={viewMode}
       />
 
       <div className={styles.searchOverlay}>
@@ -51,14 +55,25 @@ function App() {
         setIsAddingStop={setIsAddingStop}
       />
       <AuditForm
-  key={
-    selectedStop
-      ? `${selectedStop.stop_id}-${selectedStop.stop_lat}-${selectedStop.stop_lon}`
-      : "none"
-  }
-  selectedStop={selectedStop}
-  setSelectedStop={setSelectedStop}
-/>
+        key={
+          selectedStop
+            ? `${selectedStop.stop_id}-${selectedStop.stop_lat}-${selectedStop.stop_lon}`
+            : "none"
+        }
+        selectedStop={selectedStop}
+        setSelectedStop={setSelectedStop}
+      />
+      <button
+        style={{
+          position: "absolute",
+          top: 20,
+          right: 20,
+          zIndex: 2000,
+        }}
+        onClick={() => setViewMode(viewMode === "audit" ? "public" : "audit")}
+      >
+        {viewMode === "audit" ? "Public View" : "Audit View"}
+      </button>
     </>
   );
 }
