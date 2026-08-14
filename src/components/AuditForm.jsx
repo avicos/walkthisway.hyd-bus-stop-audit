@@ -3,21 +3,20 @@ import styles from "./AuditForm.module.css";
 
 export default function AuditForm({ selectedStop, setSelectedStop }) {
   const [form, setForm] = useState({
-  stop_name:
-    selectedStop?.audit_type === "manual"
-      ? ""
-      : selectedStop?.stop_name || "",
+    stop_name:
+      selectedStop?.audit_type === "manual"
+        ? ""
+        : selectedStop?.stop_name || "",
 
-  shelter: false,
-  seating: false,
-  route_map: false,
-  schedule: false,
-  pedestrian_access: false,
-  lighting: false,
-  bus_bay: false,
-  accessibility_ramp: false,
-  comments: "",
-});
+    roof: "",
+    lighting: "",
+    name_displayed: "",
+    Seating: "",
+    route_map: "",
+    schedule: "",
+    pedestrian_access: [],
+    bus_stop: "",
+  });
 
   const updateField = (field, value) => {
     setForm((prev) => ({
@@ -26,7 +25,16 @@ export default function AuditForm({ selectedStop, setSelectedStop }) {
     }));
   };
 
-  const handleSubmit = () => {
+  const togglePedestrianAccess = (value) => {
+    setForm((prev) => ({
+      ...prev,
+      pedestrian_access: prev.pedestrian_access.includes(value)
+        ? prev.pedestrian_access.filter((item) => item !== value)
+        : [...prev.pedestrian_access, value],
+    }));
+  };
+
+  const handleSubmit = async () => {
     const payload = {
       stop_id: selectedStop.stop_id,
 
@@ -43,80 +51,298 @@ export default function AuditForm({ selectedStop, setSelectedStop }) {
       ...form,
     };
 
-    fetch(
-      "https://script.google.com/macros/s/AKfycbwCPecxCkxvUn1mx_MQOqdv8c10PGtUIA4DP_UsJ_WfkXHV0evbMTjl4Z2IIzzzrVVh/exec",
-      {
-        method: "POST",
-        body: JSON.stringify(payload),
-      },
-    )
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        alert("Audit saved");
-        setSelectedStop(null);
-      })
-      .catch((err) => {
-        console.error(err);
-        alert("Failed to save");
-      });
+   try {
+  const response = await fetch("/api/submit-audit", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error("Submission failed:", data);
+    alert("Failed to submit audit");
+    return;
+  }
+
+  console.log("Kobo submission successful:", data);
+
+  alert("Audit saved");
+
+  setSelectedStop(null);
+} catch (error) {
+  console.error("Submission error:", error);
+
+  alert("Failed to submit audit");
+}
   };
 
   if (!selectedStop) return null;
 
   return (
     <div className={styles.container}>
+      {/* Header */}
       <div className={styles.header}>
-        {selectedStop.audit_type === "manual" && (
-          <>
-            <label>Stop Name</label>
+        <div>
+          {selectedStop.audit_type === "manual" && (
+            <>
+              <label>Stop Name</label>
 
-            <input
-              type="text"
-              value={form.stop_name}
-              onChange={(e) => updateField("stop_name", e.target.value)}
-              className={styles.input}
-              placeholder="Enter stop name"
-            />
-          </>
-        )}
-        <h3>
-          {selectedStop.audit_type === "manual"
-            ? "Custom Stop"
-            : selectedStop.stop_name}
-        </h3>
+              <input
+                type="text"
+                value={form.stop_name}
+                onChange={(e) =>
+                  updateField("stop_name", e.target.value)
+                }
+                className={styles.input}
+                placeholder="Enter stop name"
+              />
+            </>
+          )}
+
+          <h3>
+            {selectedStop.audit_type === "manual"
+              ? "Custom Stop"
+              : selectedStop.stop_name}
+          </h3>
+        </div>
+
         <button onClick={() => setSelectedStop(null)}>✕</button>
       </div>
 
-      {[
-        "shelter",
-        "seating",
-        "route_map",
-        "schedule",
-        "pedestrian_access",
-        "lighting",
-        "bus_bay",
-        "accessibility_ramp",
-      ].map((field) => (
-        <label key={field} className={styles.checkboxRow}>
-          <input
-            type="checkbox"
-            checked={form[field]}
-            onChange={(e) => updateField(field, e.target.checked)}
-          />
+      {/* Roof */}
+      <div className={styles.section}>
+        <h4>Does the bus stand have a roof?</h4>
 
-          {field.replaceAll("_", " ")}
-        </label>
-      ))}
+        {[
+          ["yes", "Yes"],
+          ["no", "No"],
+          ["partial", "Partial"],
+        ].map(([value, label]) => (
+          <label key={value} className={styles.optionRow}>
+            <input
+              type="radio"
+              name="roof"
+              value={value}
+              checked={form.roof === value}
+              onChange={(e) =>
+                updateField("roof", e.target.value)
+              }
+            />
 
-      <textarea
-        className={styles.comments}
-        placeholder="Comments..."
-        value={form.comments}
-        onChange={(e) => updateField("comments", e.target.value)}
-      />
+            {label}
+          </label>
+        ))}
+      </div>
 
-      <button className={styles.submitButton} onClick={handleSubmit}>
+      {/* Lighting */}
+      <div className={styles.section}>
+        <h4>Lighting?</h4>
+
+        {[
+          ["dedicated_lighting", "Dedicated lighting"],
+          [
+            "lighting_from_surroundings",
+            "Lighting from surroundings",
+          ],
+          [
+            "lighting_from_billboards",
+            "Lighting from billboards",
+          ],
+          ["no_light", "No light"],
+        ].map(([value, label]) => (
+          <label key={value} className={styles.optionRow}>
+            <input
+              type="radio"
+              name="lighting"
+              value={value}
+              checked={form.lighting === value}
+              onChange={(e) =>
+                updateField("lighting", e.target.value)
+              }
+            />
+
+            {label}
+          </label>
+        ))}
+      </div>
+
+      {/* Name displayed */}
+      <div className={styles.section}>
+        <h4>Is the name of the bus stand clearly displayed?</h4>
+
+        {[
+          ["yes", "Yes"],
+          ["partially", "Partially"],
+          ["no", "No"],
+        ].map(([value, label]) => (
+          <label key={value} className={styles.optionRow}>
+            <input
+              type="radio"
+              name="name_displayed"
+              value={value}
+              checked={form.name_displayed === value}
+              onChange={(e) =>
+                updateField("name_displayed", e.target.value)
+              }
+            />
+
+            {label}
+          </label>
+        ))}
+      </div>
+
+      {/* Seating */}
+      <div className={styles.section}>
+        <h4>Seating?</h4>
+
+        {[
+          ["no_seating", "No seating"],
+          [
+            "broken_seating_hostile_seating",
+            "Broken seating / hostile seating",
+          ],
+          ["usable_seating", "Usable seating"],
+          ["good_seating", "Good seating"],
+        ].map(([value, label]) => (
+          <label key={value} className={styles.optionRow}>
+            <input
+              type="radio"
+              name="Seating"
+              value={value}
+              checked={form.Seating === value}
+              onChange={(e) =>
+                updateField("Seating", e.target.value)
+              }
+            />
+
+            {label}
+          </label>
+        ))}
+      </div>
+
+      {/* Route map */}
+      <div className={styles.section}>
+        <h4>Route map available?</h4>
+
+        {[
+          ["yes", "Yes"],
+          ["partially_visible", "Partially visible"],
+          ["visible_but_outdated", "Visible but outdated"],
+          ["no", "No"],
+        ].map(([value, label]) => (
+          <label key={value} className={styles.optionRow}>
+            <input
+              type="radio"
+              name="route_map"
+              value={value}
+              checked={form.route_map === value}
+              onChange={(e) =>
+                updateField("route_map", e.target.value)
+              }
+            />
+
+            {label}
+          </label>
+        ))}
+      </div>
+
+      {/* Schedule */}
+      <div className={styles.section}>
+        <h4>Schedule available?</h4>
+
+        {[
+          ["yes", "Yes"],
+          ["partially_visible", "Partially visible"],
+          ["visible_but_outdated", "Visible but outdated"],
+          ["no", "No"],
+        ].map(([value, label]) => (
+          <label key={value} className={styles.optionRow}>
+            <input
+              type="radio"
+              name="schedule"
+              value={value}
+              checked={form.schedule === value}
+              onChange={(e) =>
+                updateField("schedule", e.target.value)
+              }
+            />
+
+            {label}
+          </label>
+        ))}
+      </div>
+
+      {/* Pedestrian access */}
+      <div className={styles.section}>
+        <h4>Quality of pedestrian access</h4>
+
+        <p className={styles.hint}>Select all that apply</p>
+
+        {[
+          ["footoverbridge", "Footoverbridge"],
+          ["zebra_crossing", "Zebra crossing"],
+          [
+            "well_built_footpath",
+            "Well-built footpath",
+          ],
+          [
+            "well_built_footpath_with_ramp_wheelchair",
+            "Well-built footpath with ramp / wheelchair access",
+          ],
+          ["broken_footpath", "Broken footpath"],
+        ].map(([value, label]) => (
+          <label key={value} className={styles.optionRow}>
+            <input
+              type="checkbox"
+              checked={form.pedestrian_access.includes(value)}
+              onChange={() => togglePedestrianAccess(value)}
+            />
+
+            {label}
+          </label>
+        ))}
+      </div>
+
+      {/* Bus stop position */}
+      <div className={styles.section}>
+        <h4>How is the bus stop positioned?</h4>
+
+        {[
+          ["on_the_road", "On the road"],
+          [
+            "a_few_feet_away_from_the_road",
+            "A few feet away from the road",
+          ],
+          [
+            "has_separate_designated_area",
+            "Has separate designated area",
+          ],
+        ].map(([value, label]) => (
+          <label key={value} className={styles.optionRow}>
+            <input
+              type="radio"
+              name="bus_stop"
+              value={value}
+              checked={form.bus_stop === value}
+              onChange={(e) =>
+                updateField("bus_stop", e.target.value)
+              }
+            />
+
+            {label}
+          </label>
+        ))}
+      </div>
+
+      {/* Submit */}
+      <button
+        className={styles.submitButton}
+        onClick={handleSubmit}
+      >
         Submit Audit
       </button>
     </div>

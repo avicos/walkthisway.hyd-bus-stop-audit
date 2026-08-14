@@ -13,7 +13,7 @@
 }
 
 .logo {
-  height: 42px;
+  height: 44px;
   width: auto;
   object-fit: contain;
 }
@@ -65,7 +65,53 @@
 }
 
 .auditIcon {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
+  font-size: 20px;
+  line-height: 1;
+}
+
+@media (max-width: 600px) {
+  .header {
+    height: 64px;
+    padding: 0 12px;
+  }
+
+  .logo {
+    height: 44px;
+  }
+
+  .rightSection {
+    gap: 4px;
+  }
+
+  .auditCount {
+    height: 36px;
+    padding: 0 10px;
+    gap: 4px;
+  }
+
+  .auditIcon {
+    font-size: 18px;
+  }
+
+  .searchButton {
+    width: 40px;
+    height: 40px;
+  }
+
+  .searchContainer.searchOpen {
+    position: absolute;
+    top: 64px;
+    left: 10px;
+    right: 10px;
+    z-index: 5000;
+  }
+}
+@media (max-width: 600px) {
+  .searchContainer.searchOpen {
+    position: absolute;
+    top: 64px;
+    left: 10px;
+    right: 10px;
+    z-index: 5000;
+  }
 }
