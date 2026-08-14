@@ -1,13 +1,14 @@
 import { useState } from "react";
 import StopSearch from "./components/StopSearch";
 import BusMap from "./components/BusMap";
+import Menu from "./components/Menu";
 import useStops from "./hooks/useStops";
 import useLocation from "./hooks/useLocation";
 import useAudits from "./hooks/useAudits";
 import { distanceKm } from "./utils/distance";
 import AuditForm from "./components/AuditForm";
 import styles from "./App.module.css";
-import AddStopButton from "./components/AddStopButton";
+import Header from "./components/Header";
 
 function App() {
   const stops = useStops();
@@ -17,6 +18,7 @@ function App() {
   const [viewMode, setViewMode] = useState("audit");
   const [selectedStop, setSelectedStop] = useState(null);
   const [isAddingStop, setIsAddingStop] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const nearbyStops = location
     ? stops
@@ -36,6 +38,8 @@ function App() {
 
   return (
     <>
+    <Header />
+
       <BusMap
         selectedStop={selectedStop}
         setSelectedStop={setSelectedStop}
@@ -50,10 +54,17 @@ function App() {
       <div className={styles.searchOverlay}>
         <StopSearch stops={stops} onSelect={setSelectedStop} />
       </div>
-      <AddStopButton
-        isAddingStop={isAddingStop}
+      <Menu
+        menuOpen={menuOpen}
+        setMenuOpen={setMenuOpen}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
         setIsAddingStop={setIsAddingStop}
+        recenterMap={() => {
+          // we'll wire this next
+        }}
       />
+     
       <AuditForm
         key={
           selectedStop
