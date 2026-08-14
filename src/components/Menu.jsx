@@ -8,56 +8,69 @@ export default function Menu({
   setIsAddingStop,
   recenterMap,
 }) {
+  const handleAction = (action) => {
+    action();
+    setMenuOpen(false);
+  };
+
   return (
     <div className={styles.container}>
-      <button
-        className={styles.hamburger}
-        onClick={() =>
-          setMenuOpen(!menuOpen)
-        }
-      >
-        ☰
-      </button>
-
-      {menuOpen && (
-        <div className={styles.dropdown}>
-          <button
-            onClick={() => {
+      <div className={`${styles.actions} ${menuOpen ? styles.open : ""}`}>
+        <button
+          className={styles.action}
+          onClick={() =>
+            handleAction(() => {
               setViewMode("audit");
-              setMenuOpen(false);
-            }}
-          >
-            Audit View
-          </button>
+            })
+          }
+        >
+          <span>Audit</span>
+          <span>Stop</span>
+        </button>
 
-          <button
-            onClick={() => {
+        <button
+          className={styles.action}
+          onClick={() =>
+            handleAction(() => {
               setViewMode("public");
-              setMenuOpen(false);
-            }}
-          >
-            Public View
-          </button>
+            })
+          }
+        >
+          <span>Public</span>
+          <span>View</span>
+        </button>
 
-          <button
-            onClick={() => {
+        <button
+          className={styles.action}
+          onClick={() =>
+            handleAction(() => {
               setIsAddingStop(true);
-              setMenuOpen(false);
-            }}
-          >
-            Add Missing Stop
-          </button>
+            })
+          }
+        >
+          <span>Add</span>
+          <span>Stop</span>
+        </button>
 
-          <button
-            onClick={() => {
-              recenterMap();
-              setMenuOpen(false);
-            }}
-          >
-            Recenter Map
-          </button>
-        </div>
-      )}
+        <button
+          className={styles.action}
+          onClick={() => handleAction(recenterMap)}
+        >
+          <span>Recenter</span>
+        </button>
+      </div>
+
+      <button
+        className={`${styles.hamburger} ${
+          menuOpen ? styles.hamburgerOpen : ""
+        }`}
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   );
 }
