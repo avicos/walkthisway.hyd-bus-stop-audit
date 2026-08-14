@@ -3,13 +3,69 @@
   background: #1976d2;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 20px;
   box-sizing: border-box;
   flex-shrink: 0;
+  position: relative;
+  z-index: 3000;
+  overflow: visible;
 }
 
 .logo {
   height: 42px;
   width: auto;
+  object-fit: contain;
+}
+.searchContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.searchButton {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: white;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.searchButton:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auditCount {
+  height: 36px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.auditIcon {
+  width: 24px;
+  height: 24px;
   object-fit: contain;
 }

@@ -13,8 +13,7 @@ import Header from "./components/Header";
 function App() {
   const stops = useStops();
   const location = useLocation();
-  const audits = useAudits();
-
+  const { audits, auditCount } = useAudits();
   const [viewMode, setViewMode] = useState("audit");
   const [selectedStop, setSelectedStop] = useState(null);
   const [isAddingStop, setIsAddingStop] = useState(false);
@@ -37,55 +36,49 @@ function App() {
     : [];
 
   return (
-    <>
-    <Header />
-
-      <BusMap
-        selectedStop={selectedStop}
-        setSelectedStop={setSelectedStop}
-        userLocation={location}
-        nearbyStops={nearbyStops}
-        isAddingStop={isAddingStop}
-        setIsAddingStop={setIsAddingStop}
+    <div className={styles.app}>
+      <Header
+        stops={stops}
+        onSelect={setSelectedStop}
         audits={audits}
-        viewMode={viewMode}
+        auditCount={auditCount}
       />
+      <div className={styles.mapContainer}>
+        <BusMap
+          selectedStop={selectedStop}
+          setSelectedStop={setSelectedStop}
+          userLocation={location}
+          nearbyStops={nearbyStops}
+          isAddingStop={isAddingStop}
+          setIsAddingStop={setIsAddingStop}
+          audits={audits}
+          viewMode={viewMode}
+        />
 
-      <div className={styles.searchOverlay}>
-        <StopSearch stops={stops} onSelect={setSelectedStop} />
+        
+
+        <Menu
+          menuOpen={menuOpen}
+          setMenuOpen={setMenuOpen}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          setIsAddingStop={setIsAddingStop}
+          recenterMap={() => {
+            // we'll wire this next
+          }}
+        />
+
+        <AuditForm
+          key={
+            selectedStop
+              ? `${selectedStop.stop_id}-${selectedStop.stop_lat}-${selectedStop.stop_lon}`
+              : "none"
+          }
+          selectedStop={selectedStop}
+          setSelectedStop={setSelectedStop}
+        />
       </div>
-      <Menu
-        menuOpen={menuOpen}
-        setMenuOpen={setMenuOpen}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        setIsAddingStop={setIsAddingStop}
-        recenterMap={() => {
-          // we'll wire this next
-        }}
-      />
-     
-      <AuditForm
-        key={
-          selectedStop
-            ? `${selectedStop.stop_id}-${selectedStop.stop_lat}-${selectedStop.stop_lon}`
-            : "none"
-        }
-        selectedStop={selectedStop}
-        setSelectedStop={setSelectedStop}
-      />
-      <button
-        style={{
-          position: "absolute",
-          top: 20,
-          right: 20,
-          zIndex: 2000,
-        }}
-        onClick={() => setViewMode(viewMode === "audit" ? "public" : "audit")}
-      >
-        {viewMode === "audit" ? "Public View" : "Audit View"}
-      </button>
-    </>
+    </div>
   );
 }
 
