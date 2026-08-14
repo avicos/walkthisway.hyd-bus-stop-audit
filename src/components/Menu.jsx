@@ -3,10 +3,10 @@ import styles from "./Menu.module.css";
 export default function Menu({
   menuOpen,
   setMenuOpen,
-  viewMode,
-  setViewMode,
   setIsAddingStop,
   recenterMap,
+  isAddingStop,
+  onOpenReport,
 }) {
   const handleAction = (action) => {
     action();
@@ -14,30 +14,16 @@ export default function Menu({
   };
 
   return (
-    <div className={styles.container}>
+    <div
+      className={`${styles.container} ${isAddingStop ? styles.addingStop : ""}`}
+    >
       <div className={`${styles.actions} ${menuOpen ? styles.open : ""}`}>
         <button
           className={styles.action}
-          onClick={() =>
-            handleAction(() => {
-              setViewMode("audit");
-            })
-          }
+          onClick={() => handleAction(onOpenReport)}
         >
-          <span>Audit</span>
-          <span>Stop</span>
-        </button>
-
-        <button
-          className={styles.action}
-          onClick={() =>
-            handleAction(() => {
-              setViewMode("public");
-            })
-          }
-        >
-          <span>Public</span>
-          <span>View</span>
+          <span>📊</span>
+          <span>Report</span>
         </button>
 
         <button
@@ -48,7 +34,7 @@ export default function Menu({
             })
           }
         >
-          <span>Add</span>
+          <span>Audit</span>
           <span>Stop</span>
         </button>
 

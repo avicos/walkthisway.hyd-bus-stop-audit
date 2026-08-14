@@ -66,7 +66,7 @@ export default function BusMap({
 
           <Circle
             center={[userLocation.lat, userLocation.lon]}
-            radius={1000}
+            radius={100}
           />
         </>
       )}

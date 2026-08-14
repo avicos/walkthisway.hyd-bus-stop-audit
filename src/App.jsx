@@ -6,6 +6,7 @@ import useAudits from "./hooks/useAudits";
 import AuditForm from "./components/AuditForm";
 import styles from "./App.module.css";
 import Header from "./components/Header";
+import Report from "./components/Report";
 
 function App() {
   const location = useLocation();
@@ -15,14 +16,15 @@ function App() {
   const [isAddingStop, setIsAddingStop] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [recenterRequest, setRecenterRequest] = useState(0);
+  const [reportOpen, setReportOpen] = useState(false);
 
   return (
     <div className={styles.app}>
       <Header
-  audits={audits}
-  onSelect={setSelectedAudit}
-  auditCount={auditCount}
-/>
+        audits={audits}
+        onSelect={setSelectedAudit}
+        auditCount={auditCount}
+      />
 
       <div className={styles.mapContainer}>
         <BusMap
@@ -44,7 +46,12 @@ function App() {
           recenterMap={() => {
             setRecenterRequest((prev) => prev + 1);
           }}
+          isAddingStop={isAddingStop}
+          onOpenReport={() => setReportOpen(true)}
         />
+        {reportOpen && (
+          <Report audits={audits} onClose={() => setReportOpen(false)} />
+        )}
 
         <AuditForm
           key={

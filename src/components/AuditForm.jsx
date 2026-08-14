@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import L from "leaflet";
 import styles from "./AuditForm.module.css";
 
 export default function AuditForm({ selectedStop, setSelectedStop }) {
+  const containerRef = useRef(null);
+   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     stop_name:
       selectedStop?.audit_type === "manual"
@@ -17,6 +20,15 @@ export default function AuditForm({ selectedStop, setSelectedStop }) {
     pedestrian_access: [],
     bus_stop: "",
   });
+ useEffect(() => {
+  if (!containerRef.current) return;
+
+  // Prevent Leaflet from receiving clicks from the form
+  L.DomEvent.disableClickPropagation(containerRef.current);
+
+  // Prevent the map from reacting to scrolling over the form
+  L.DomEvent.disableScrollPropagation(containerRef.current);
+}, []);
 
   const updateField = (field, value) => {
     setForm((prev) => ({
@@ -34,56 +46,92 @@ export default function AuditForm({ selectedStop, setSelectedStop }) {
     }));
   };
 
-  const handleSubmit = async () => {
-    const payload = {
-      stop_id: selectedStop.stop_id,
+const handleSubmit = async () => {
+  console.log("SUBMIT CLICKED");
 
-      stop_name:
-        selectedStop.audit_type === "manual"
-          ? form.stop_name
-          : selectedStop.stop_name,
-
-      audit_type: selectedStop.audit_type || "gtfs",
-
-      stop_lat: selectedStop.stop_lat,
-      stop_lon: selectedStop.stop_lon,
-
-      ...form,
-    };
-
-   try {
-  const response = await fetch("/api/submit-audit", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    console.error("Submission failed:", data);
-    alert("Failed to submit audit");
+  if (!selectedStop) {
+    console.error("No selected stop");
+    alert("No stop selected");
     return;
   }
 
-  console.log("Kobo submission successful:", data);
+  if (!form.stop_name?.trim()) {
+    alert("Please enter a bus stop name");
+    return;
+  }
 
-  alert("Audit saved");
+  if (submitting) return;
 
-  setSelectedStop(null);
-} catch (error) {
-  console.error("Submission error:", error);
+  setSubmitting(true);
 
-  alert("Failed to submit audit");
-}
+  const payload = {
+    stop_name: form.stop_name.trim(),
+
+    stop_lat: Number(selectedStop.stop_lat),
+    stop_lon: Number(selectedStop.stop_lon),
+
+    roof: form.roof,
+    lighting: form.lighting,
+    name_displayed: form.name_displayed,
+    Seating: form.Seating,
+    route_map: form.route_map,
+    schedule: form.schedule,
+    pedestrian_access: form.pedestrian_access,
+    bus_stop: form.bus_stop,
   };
 
+  console.log("Submitting:", payload);
+
+  try {
+    const response = await fetch("/api/submit-audit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("Response status:", response.status);
+
+    const text = await response.text();
+
+    console.log("Response:", text);
+
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { raw: text };
+    }
+
+    if (!response.ok) {
+      console.error("Submission failed:", data);
+
+      alert(
+        data?.error ||
+        data?.details ||
+        "Failed to submit audit"
+      );
+
+      return;
+    }
+
+    alert("Audit saved");
+
+    setSelectedStop(null);
+  } catch (error) {
+    console.error("Submission error:", error);
+
+    alert(`Submission error: ${error.message}`);
+  } finally {
+    setSubmitting(false);
+  }
+};
   if (!selectedStop) return null;
 
   return (
-    <div className={styles.container}>
+    <div ref={containerRef} className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
         <div>
@@ -339,12 +387,14 @@ export default function AuditForm({ selectedStop, setSelectedStop }) {
       </div>
 
       {/* Submit */}
-      <button
-        className={styles.submitButton}
-        onClick={handleSubmit}
-      >
-        Submit Audit
-      </button>
+     <button
+  type="button"
+  className={styles.submitButton}
+  onClick={handleSubmit}
+  disabled={submitting}
+>
+  {submitting ? "Submitting..." : "Submit Audit"}
+</button>
     </div>
   );
 }

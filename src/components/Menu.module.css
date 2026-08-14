@@ -156,10 +156,6 @@
   transition-delay: 0.12s;
 }
 
-.actions.open .action:nth-child(4) {
-  transition-delay: 0.16s;
-}
-
 /* -------------------------
    Mobile
 ------------------------- */
@@ -185,4 +181,8 @@
     gap: 7px;
     margin-bottom: 10px;
   }
+}
+
+.addingStop {
+  pointer-events: none;
 }
