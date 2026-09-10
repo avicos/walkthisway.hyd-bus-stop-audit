@@ -1,10 +1,4 @@
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  Circle,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 
 import { userIcon, auditedStopIcon } from "../utils/icons";
 
@@ -40,9 +34,9 @@ export default function BusMap({
       />
 
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        url={`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=${import.meta.env.VITE_CARTO_API_KEY}`}
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        subdomains={"abcd"}
+        subdomains="abcd"
       />
 
       <FlyToUser userLocation={userLocation} />
@@ -64,10 +58,7 @@ export default function BusMap({
             <Popup>Your Location</Popup>
           </Marker>
 
-          <Circle
-            center={[userLocation.lat, userLocation.lon]}
-            radius={100}
-          />
+          <Circle center={[userLocation.lat, userLocation.lon]} radius={100} />
         </>
       )}
 
@@ -111,17 +102,16 @@ export default function BusMap({
       })}
 
       {/* Marker for a newly added stop */}
-      {selectedStop?.stop_lat != null &&
-        selectedStop?.stop_lon != null && (
-          <Marker
-            position={[
-              Number(selectedStop.stop_lat),
-              Number(selectedStop.stop_lon),
-            ]}
-          >
-            <Popup>New Bus Stop</Popup>
-          </Marker>
-        )}
+      {selectedStop?.stop_lat != null && selectedStop?.stop_lon != null && (
+        <Marker
+          position={[
+            Number(selectedStop.stop_lat),
+            Number(selectedStop.stop_lon),
+          ]}
+        >
+          <Popup>New Bus Stop</Popup>
+        </Marker>
+      )}
     </MapContainer>
   );
 }
